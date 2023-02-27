@@ -1,0 +1,43 @@
+#################################################
+## Update yum packages, Install Java.
+## Stop Jenkins and do the backup of the files 
+## into dir as tar into a timestamped dir
+## Install/update Jenkins after the backup
+## Start Jenkins and enable to start a reboot
+#################################################
+- name: <install-start-jenkins> update yum
+  yum:
+    name: '*'
+    state: latest
+
+- name: <install-start-jenkins> Install java
+  yum:
+    name: "{{ java_version }}"
+    state: present
+
+- name: <install-start-jenkins> Stop jenkins
+  systemd:
+    name: jenkins
+    state: stopped
+
+- name: <install-start-jenkins> Perform backups of Jenkins dir
+  include_tasks: "perform-backups.yml"
+
+- name: <install-start-jenkins> Install jenkins
+  yum:
+    name: jenkins
+    state: latest
+
+- name: <install-start-jenkins> perform daemon-reload
+  systemd:
+    daemon_reload: yes
+
+- name: <install-start-jenkins> Start jenkins
+  systemd:
+    name: jenkins
+    state: started
+
+- name: <install-start-jenkins> Enable to start on reboot
+  systemd:
+     name: jenkins
+     enabled: true

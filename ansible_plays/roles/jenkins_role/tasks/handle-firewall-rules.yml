@@ -1,0 +1,36 @@
+####################################################
+## Enable firewalld rule for jenkins port
+## Enable firewalld rich rules with input list of rules
+## provides option to disable previous rich rules with input list
+####################################################
+- name: <handle-firewall-rules> Enable firewalld
+  firewalld:
+     permanent: yes
+     immediate: yes
+     port: "{{ jenkins_port }}/tcp"
+     state: enabled
+     zone: "{{ firewall_zone }}"
+  notify: "restart-firewalld"
+
+- name: <handle-firewall-rules> Enable firewalld rich rules
+  firewalld:
+     permanent: yes
+     immediate: yes
+     state: enabled
+     zone: "{{ firewall_zone }}"
+     rich_rule: "{{ item }}"
+  with_items: "{{ firewall_enable_rules_list }}"
+  when: firewall_enable_rules_list is defined
+  notify: "restart-firewalld"
+
+- name: <handle-firewall-rules> Disable firewalld rich rules
+  firewalld:
+     permanent: yes
+     immediate: yes
+     state: disabled
+     zone: "{{ firewall_zone }}"
+     rich_rule: "{{ item }}"
+  with_items: "{{ firewall_disable_rules_list }}"
+  when: firewall_disable_rules_list is defined
+  notify: "restart-firewalld"
+

@@ -1,0 +1,41 @@
+---
+# defaults file for jenkins_role
+
+#Jenkins download dir where repo is downlaoded before copying into install dir
+jenkins_repo_download_dir: /var/jenkins_bkups/repo/
+jenkins_repo_name: jenkins.repo
+
+#jenkins install dir where yum takes the repo from
+jenkins_repo_install_dir: /etc/yum.repos.d/
+
+#Jenkins files dir, used during backup
+jenkins_bkups_archive_dir: /var/jenkins_bkups/file_archives/
+jenkins_bkups_tar_name: jenkins_files_archive.tar
+jenkins_files_dir:  /var/lib/jenkins/
+
+#Jenkins war file name dir, used during backup
+jenkins_war_dir: /usr/share/java/
+jenkins_war_filename: jenkins.war
+
+#jenkins stable version urls
+jenkins_stable_repo_url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+jenkins_stable_key_url: https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+#jenkins patch urls
+jenkins_pacth_repo_url: https://pkg.jenkins.io/redhat/jenkins.repo
+jenkins_patch_key_url: https://pkg.jenkins.io/redhat/jenkins.io.key
+
+#Define required java version
+java_version: java-17-openjdk
+
+#Set if to install a patch version
+patch_jenkins: false
+
+#Used to install current repo without downloading
+install_current_repo: false
+
+#Jenkins port value
+jenkins_port: 8080
+
+#Default firewall zone for enabling firewall rules
+firewall_zone: public

@@ -1,0 +1,73 @@
+# tasks file for jenkins_role
+################################################################################################################
+## Set the download url either to stable version or patch version based on patch_jenkins flag
+## Download the repo and key file. If the repo changed, then perform backups and install jenkins
+## else, perform health checks and exit
+## if install_current_repo is set, the repo file should exist in the backup dir and will not be downloaded again
+## Enable firewalld rules
+## Flush handlers
+## Check if jenkins url is up and running
+################################################################################################################
+- name: <main> Set stable repo url
+  set_fact:
+     jenkins_repo_url: "{{ jenkins_stable_repo_url }}"
+     jenkins_key_url: "{{ jenkins_stable_key_url }}"
+  when: patch_jenkins is not defined or (patch_jenkins == false)
+
+- name: <main> Set pacth repo url
+  set_fact:
+     jenkins_repo_url: "{{ jenkins_pacth_repo_url }}"
+     jenkins_key_url: "{{ jenkins_patch_key_url }}"
+  when: patch_jenkins == true
+
+- name: <main> Init Dirs
+  include_tasks: "initialize-dirs.yml"
+
+# Download the repo and key file install_current_repo is not set
+# Call cleanup in case of exceptions
+- name: <main> Download Repo file and import Key file block
+  block:
+    - name: <main> Download and import repo key file
+      rpm_key:
+        state: present
+        key: "{{ jenkins_key_url }}"
+
+    - name: <main> Download repo file to bkup dir
+      get_url:
+        url: "{{ jenkins_repo_url }}"
+        dest: "{{ jenkins_repo_download_dir }}/{{ jenkins_repo_name }}"
+      register: jenkins_repo_dload
+  when: install_current_repo is not defined or (install_current_repo == false)
+  rescue:
+    - name: <main> Error while downloading
+      debug:
+        msg: "Caught error during the download, notify to delete the repo if downloaded so next run can download again"
+      changed_when: true
+      notify: "cleanup-after-exceptions"
+
+# Backup the previous repo file, update with the new one
+# Install/upgrade with the new repo and start jenkins
+# Call cleanup in case of exceptions
+- name: <main> Handle install/upgrade when the download file is changed or install_local_repo is set
+  block:  
+     - name:  <main> backup and update the repo with new one downloaded
+       include_tasks: "backup-update-repo.yml"
+
+     - name: <main> Install/Upgrade Jenkins
+       include_tasks: "install-start-jenkins.yml"
+  when: install_current_repo == true or jenkins_repo_dload is changed
+  rescue:
+    - name: <main> Error while installing
+      debug:
+        msg: "Caught error during the install, notify to delete the repo downloaded so next run can install"
+      changed_when: true
+      notify: "cleanup-after-exceptions"
+
+- name: <main> Enabler/Disable firewall rules
+  include_tasks: "handle-firewall-rules.yml"
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: <main> Check Jenkins Running
+  include_tasks: "check-jenkins-status.yml"

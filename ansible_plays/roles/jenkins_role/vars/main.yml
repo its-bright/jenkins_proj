@@ -1,0 +1,9 @@
+#Jenkins URI
+jenkins_url: "<provide Jenkins Url>"
+
+#List of firewall rich rules to enable
+firewall_enable_rules_list:
+     - 'rule port port=8080 protocol=tcp limit value=100/m accept'
+
+#list of firewall rich rules to disable
+firewall_disable_rules_list: []

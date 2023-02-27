@@ -1,0 +1,21 @@
+
+#############################################################
+## Initialize to create the download and archive directories
+#############################################################
+- name: <initialize-dirs> Print dir names
+  debug:
+     var="{{ item }}"
+  with_items:
+       -  jenkins_repo_download_dir
+       -  jenkins_bkups_archive_dir
+
+- name: <initialize-dirs> Create init dirs if doesnt exist
+  file:
+    path: "{{ item }}"
+    mode: '0755'
+    state: directory
+  with_items:
+       - "{{ jenkins_repo_download_dir }}"
+       - "{{ jenkins_bkups_archive_dir }}"
+
+

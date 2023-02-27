@@ -1,0 +1,20 @@
+---
+- name: Insall Jenkins calling jenkins role
+  hosts: jenkins_hosts
+  become: true
+  remote_user: ec2-user
+  become_user: root
+  gather_facts: yes
+
+  vars:
+     patch_jenkins: false
+     install_current_repo: false
+     jenkins_url: "<provide jenkins uri>"
+
+     firewall_enable_rules_list:
+         - 'rule port port=8080 protocol=tcp limit value=100/m accept'
+
+     firewall_disable_rules_list: []
+
+  roles:
+        - role: jenkins_role

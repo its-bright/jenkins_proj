@@ -1,0 +1,33 @@
+##########################################################################
+## Tar and zip jenkins files directory and archive into a timestamped backup dir
+## Backup the jenkins war file with timestamp into the backup dir
+##########################################################################
+- name: <perform-backups> Check if the jenkins files dir exists
+  stat:
+     path: "{{ jenkins_files_dir }}"
+  register: jenkins_files_dir_stats
+
+- name: <perform-backups> Check if the jenkins war file exists
+  stat:
+     path: "{{ jenkins_war_dir }}/{{ jenkins_war_filename }}"
+  register: jenkins_war_stats
+
+- name: <perform-backups> Create backup archive timestamp dir
+  file:
+    path: "{{ jenkins_bkups_archive_dir }}/{{ ansible_date_time.iso8601_basic_short }}"
+    state: directory
+  when: jenkins_files_dir_stats.stat.exists or jenkins_war_stats.stat.exists
+
+- name: <perform-backups> Generate jenkins files archive
+  archive:
+     path: "{{ jenkins_files_dir }}"
+     dest: "{{ jenkins_bkups_archive_dir }}/{{ ansible_date_time.iso8601_basic_short }}/{{ ansible_date_time.iso8601_basic_short }}-{{ jenkins_bkups_tar_name }}.gz"
+     format: gz
+  when: jenkins_files_dir_stats.stat.exists
+
+- name: <perform-backups> Generate Jenkins war gz file
+  archive:
+     path: "{{ jenkins_war_dir }}/{{ jenkins_war_filename }}"
+     dest: "{{ jenkins_bkups_archive_dir }}/{{ ansible_date_time.iso8601_basic_short }}/{{ ansible_date_time.iso8601_basic_short }}-{{ jenkins_war_filename }}.gz"
+     format: gz
+  when: jenkins_war_stats.stat.exists

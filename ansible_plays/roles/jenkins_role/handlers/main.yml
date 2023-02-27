@@ -1,0 +1,17 @@
+#handlers
+####################################################################
+## When exceptions happen,delete the repo file from the download dir 
+## so as the next run can download and re-install
+####################################################################
+
+- name: <handler> Delete dowloaded repo file so as to install again in next run
+  file:
+    path: "{{ jenkins_repo_download_dir }}/{{ jenkins_repo_name }}"
+    state: absent
+  listen: "cleanup-after-exceptions"
+
+- name: <handler> restart firewalld
+  service:
+     name: firewalld
+     state: restarted
+  listen: "restart-firewalld"

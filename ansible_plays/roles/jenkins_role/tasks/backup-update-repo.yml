@@ -1,0 +1,30 @@
+######################################################################################################
+## Checks if the repo exists in install dir, if so backup it to a timestamped folder under archive dir
+## Replace the the repo in install directory with the one downloaded into the backup dir
+######################################################################################################
+- name: <backup-update-repo> Check if the repo file already exists in yum install dir
+  stat:
+     path: "{{ jenkins_repo_install_dir }}/{{ jenkins_repo_name }}"
+  register: repo_file
+
+- name: <backup-update-repo> Create backup archive timestamp dir
+  file:
+    path: "{{ jenkins_bkups_archive_dir }}/{{ ansible_date_time.iso8601_basic_short }}"
+    state: directory
+  when: repo_file.stat.exists
+
+- name: <backup-update-repo> backup if the file exists with a timestamp as example 20230224T091933-bkup-jenkins.repo
+  copy:
+    src: "{{ jenkins_repo_install_dir }}/{{ jenkins_repo_name }}"
+    dest: "{{ jenkins_bkups_archive_dir }}/{{ ansible_date_time.iso8601_basic_short }}/{{ ansible_date_time.iso8601_basic_short }}-bkup-{{ jenkins_repo_name }}"
+    mode: 0644
+    remote_src: true
+  when: repo_file.stat.exists
+
+- name: <backup-update-repo> Replace the downloaded file to repo dir
+  copy:
+    src: "{{ jenkins_repo_download_dir }}/{{ jenkins_repo_name }}"
+    dest: "{{ jenkins_repo_install_dir }}/{{ jenkins_repo_name }}"
+    mode: 0644
+    remote_src: true
+
