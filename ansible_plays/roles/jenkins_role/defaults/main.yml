@@ -37,5 +37,8 @@ install_current_repo: false
 #Jenkins port value
 jenkins_port: 8080
 
+#default Jenkins url, update it with the actual uri 
+jenkins_url: "http://localhost:8080"
+
 #Default firewall zone for enabling firewall rules
 firewall_zone: public

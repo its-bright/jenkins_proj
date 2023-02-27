@@ -28,7 +28,7 @@ The following variables are defaulted, and can be updated into the playbook to c
     jenkins_patch_key_url: https://pkg.jenkins.io/redhat/jenkins.io.key
 
     patch_jenkins: false
-
+    install_current_repo: false
 
 | var name |  Default Value  | Required | Description | Comments |
 |:--------:|:---------------:|:-----------------:|:-----------:|:--------:|
@@ -65,6 +65,10 @@ Playbook:
   vars:
      patch_jenkins: false
      install_current_repo: false
+     firewall_enable_rules_list:
+         - 'rule port port=8080 protocol=tcp limit value=100/m accept'
+     firewall_disable_rules_list: []
+
 
   roles:
         - role: jenkins_role
