@@ -13,10 +13,6 @@
   retries: 5
   delay: 2
 
-- name: print status local url
-  debug:
-     var: result
-
 - name: Check if public host URL is up and running
   uri:
     url: "{{ jenkins_url }}"
@@ -29,6 +25,3 @@
   delay: 2
   when: jenkins_url is defined
 
-- name: print status public url
-  debug:
-     var: result

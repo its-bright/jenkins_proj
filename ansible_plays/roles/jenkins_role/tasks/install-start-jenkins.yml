@@ -19,6 +19,7 @@
   systemd:
     name: jenkins
     state: stopped
+  ignore_errors: true
 
 - name: <install-start-jenkins> Perform backups of Jenkins dir
   include_tasks: "perform-backups.yml"

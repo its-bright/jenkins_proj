@@ -5,7 +5,7 @@ resource "aws_instance" "jenkins_instance" {
     key_name = lookup(var.jenkins_instance_map, "key_name")
     subnet_id = lookup(var.jenkins_instance_map, "subnet_id")
     
-    user_data = file(lookup(var.control_instance_map, "userdata_script"))
+    user_data = file(lookup(var.jenkins_instance_map, "userdata_script"))
 
     vpc_security_group_ids = [
         aws_security_group.sg_jenkins.id
